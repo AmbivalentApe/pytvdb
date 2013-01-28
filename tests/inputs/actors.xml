@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Actors>
+<Actor>
+  <id>68363</id>
+  <Image></Image>
+  <Name>Charlotte Fich</Name>
+  <Role>Ingrid Dahl</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68368</id>
+  <Image></Image>
+  <Name>Erik Wedersøe</Name>
+  <Role>Ulf Thomsen</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68369</id>
+  <Image></Image>
+  <Name>Lars Bom</Name>
+  <Role>Johnny Olsen</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68365</id>
+  <Image></Image>
+  <Name>Lars Brygmann</Name>
+  <Role>Thomas La Cour</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68366</id>
+  <Image></Image>
+  <Name>Mads Mikkelsen</Name>
+  <Role>Allan Fischer</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68367</id>
+  <Image></Image>
+  <Name>Trine Pallesen</Name>
+  <Role>Gabriella 'Gaby' Levin</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>68364</id>
+  <Image></Image>
+  <Name>Waage Sandø</Name>
+  <Role>Jens Peter 'IP' Sørensen</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+<Actor>
+  <id>292143</id>
+  <Image></Image>
+  <Name>Michael Falch</Name>
+  <Role>Jan Boysen</Role>
+  <SortOrder>3</SortOrder>
+</Actor>
+</Actors>
