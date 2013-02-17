@@ -19,7 +19,11 @@ def test_parse_invalidxml():
 def test_episode():
     import os
     xml = open(os.path.join(os.getcwd(),os.sep.join(['tests','inputs','episode.xml'])),'r').read()
+    image = open(os.path.join(os.getcwd(),os.sep.join(['tests','inputs','297789.jpg'])),'rb').read()
     e = Episode.from_xml(xml)
     print e
     assert e.episode_number ==2
     assert len(e.guest_stars) == 8
+    assert e.filename == 'episodes/78859/297789.jpg'
+    e.enrich_art()
+    assert e.filename == image

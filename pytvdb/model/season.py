@@ -14,6 +14,14 @@ class Season(TVDBType):
         episode_numbers.sort()
         self._episode_numbers = episode_numbers
         self.cover_art = cover_art
+        self._art_enriched = False
+
+
+    def enrich_art(self):
+        if not self._art_enriched:
+            for e in self._episodes.values():
+                e.enrich_art()
+            self._art_enriched = True
 
     def __len__(self):
         return len(self._episode_numbers)

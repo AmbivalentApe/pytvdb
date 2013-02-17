@@ -6,6 +6,7 @@ from ..model.tv_show import TVShow
 from ..model.episode import Episode
 from ..model.exceptions import TVDBException
 from . import TVDBShowProvider
+from . import http_get
 import logging
 import os
 import re
@@ -65,7 +66,7 @@ class HttpTVDBAdapter(TVDBShowProvider):
             raise TVDBException('Name must be one of str,int,tuple')
         base_zip = '%s%s/series/%s/all/%s.zip' % (self.base_url,self.application_id,series_id,language)
         self.logger.debug('Fetching zip file')
-        base_zip = self._get(base_zip)
+        base_zip = http_get(base_zip)
 
         zip_stream = StringIO.StringIO()
         zip_stream.write(base_zip)
@@ -76,26 +77,6 @@ class HttpTVDBAdapter(TVDBShowProvider):
         meta_info = TVShow.from_xml(episodes,art)
         return meta_info
 
-    def _get(self,url):
-        """
-        Internal search method. Given tvdb.com sometimes struggles under load,
-        maintain internal state and retry for 5 times before giving up.
-        """
-        retries = 5
-        last_exception = None
-        while retries > 0:
-            try:
-                self.logger.debug('Fetching %s',url)
-                response = urllib.urlopen(url)
-                response = response.read()
-                return response
-            except IOError as e:
-                logger.exception(e)
-                retries = retries-1
-                last_exception = e # track this so we can rethrow it
-        raise TVDBException(last_exception)
-
-
     def search(self,name,language='en',strict=False):
         '''
         Search for series matching the name and (optional) language.
@@ -105,7 +86,7 @@ class HttpTVDBAdapter(TVDBShowProvider):
         GET_SERIES='GetSeries.php?seriesname='
         self.logger.debug('Searching for \"%s\" language=(%s)' % (name,language))
 
-        series_info = self._get(self.base_url+GET_SERIES+urllib.quote_plus(name)+'&language='+language)
+        series_info = http_get(self.base_url+GET_SERIES+urllib.quote_plus(name)+'&language='+language)
         series_xml = etree.fromstring(series_info)
         series = series_xml.xpath('//Series')
         self.logger.debug('Found %s results' % (len(series)))
@@ -161,7 +142,7 @@ class HttpTVDBAdapter(TVDBShowProvider):
 
         info ='%sGetEpisodeByAirDate?apikey=%s&seriesid=%s&airdate=%s&language=%s' % (self.base_url,self.application_id,series,date.strftime(air_date,'%Y-%m-%d'),language)
 
-        series_info = self._get(info)
+        series_info = http_get(info)
         if '<Error>' in series_info:
             raise TVDBException('No episode found')
         return Episode.from_xml(re.search('.*(<Episode>.*</Episode>).*',series_info.replace('\n','')).groups()[0])

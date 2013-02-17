@@ -32,6 +32,24 @@ class TVShow(TVDBType):
             seasons.sort()
             series = [Season([X for X in episodes if int(X.season_number) ==i],season_art.get(i,None)) for i in seasons]
             self.seasons = series
+        self._art_enriched = False
+
+    def enrich_art(self):
+        if not self._art_enriched:
+            attributes = ['fan_art','series_art','banner','season_art']
+            for attr in attributes:
+                print attr
+                if hasattr(self,attr) and getattr(self,attr) is not None:
+                    val = getattr(self,attr)
+                    if isinstance(val,str):
+                        setattr(self,attr,self._get_art(val))
+                    elif isinstance(val,list):
+                        for X in val:
+                            if isinstance(X,TVDBType):
+                                X.enrich_art()
+            self.seasons.enrich_art()
+            self._art_enriched = True
+
             
     def __str__(self):
         return "TVShow{%s}" % (self.__dict__)

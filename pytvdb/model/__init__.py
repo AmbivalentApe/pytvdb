@@ -2,6 +2,9 @@ from lxml import etree
 from .exceptions import TVDBException
 
 def parse_xml(xml,root_name):
+    '''
+    Uitlity function for parsing xml into an lxml.etree
+    '''
     if isinstance(xml,str):
         try:
             xml = etree.fromstring(xml)
@@ -21,10 +24,10 @@ def convert_to_map(xml,tag_name=None,convert_property_names=False):
     else:
         return {X.tag:unicode(X.text) for X in xml.getchildren()}
 
-'''
-
-'''
 def convert_to_pythonic_form(property_name):
+    '''
+    Convert strings to a more pythonic form better suited for attribute names (eg FirstAired becomes first_aired.
+    '''
     def rep(match):
         return '_'+match.group(0).lower()
     import re
@@ -44,7 +47,17 @@ from abc import ABCMeta
 class TVDBType:
     __metaclass__ = ABCMeta
 
+    def enrich_art(self):
+        '''
+        Resolve any images if appropriate
+        '''
+        pass
+
     def _convert_field(self,fields,new_type):
+        ''' 
+        Utility function for remapping all of the object atributes in fields to the new_type
+        New types available are int and list
+        '''
         for field in fields:
             if hasattr(self,field):
                 val = getattr(self,field)

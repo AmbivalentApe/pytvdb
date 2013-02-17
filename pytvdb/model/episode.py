@@ -12,9 +12,17 @@ class Episode(TVDBType):
 
         self._convert_field(['id','seasonid','combined_episode_number','absolute_number','combined_season','season_number','dvd_season','episode_number','seried_id','ep_img_flag','dvd_discid'],int)
         self._convert_field(['guest_stars'],list)
+        self._art_enriched = False
+
 
     def __str__(self):
         return "Episode:{%s}" % (str(self.__dict__))
+
+    def enrich_art(self):
+        if not self._art_enriched:
+            if hasattr(self,'filename') and self.filename is not None:
+                self.filename = self._get_art(self.filename)
+            self._art_enriched = True
 
     @staticmethod
     def from_xml(xml):
