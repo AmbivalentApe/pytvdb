@@ -1,5 +1,7 @@
 from lxml import etree
+from ..impl import http_get
 from .exceptions import TVDBException
+import urllib
 
 def parse_xml(xml,root_name):
     '''
@@ -52,6 +54,10 @@ class TVDBType:
         Resolve any images if appropriate
         '''
         pass
+
+    def _get_art(self,image_url):
+        url = u'%s%s' % ('http://www.thetvdb.com/banners/',image_url)
+        return http_get(url)    
 
     def _convert_field(self,fields,new_type):
         ''' 

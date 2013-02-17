@@ -115,10 +115,19 @@ class HttpTVDBAdapter(TVDBShowProvider):
             
 
     def get_show_by_imdbid(self,imdbid):
-        raise NotImplemented
+        return self._get_by_external_id(imdbid,'imdbid')
 
     def get_show_by_zap2itid(self,zap2itid):
-        raise NotImplemented
+        return self._get_by_external_id(zap2itid,'zap2it')
+
+    def _get_by_external_id(self,id,idstring):
+        url = '%s/GetSeriesByRemoteID.php?%s=%s' % (self.base_url,idstring,id)
+        data = http_get(url)
+        if 'seriesid' not in data:
+            raise TVDBException("No series found for \"%s=%s\"" % (idstring,id))
+        series = etree.fromstring(data)
+        seriesid = series.xpath('//seriesid')[0].text
+        return self.get_show(int(seriesid)) 
 
     def get_episode(self,series,air_date,language='en'):
         '''

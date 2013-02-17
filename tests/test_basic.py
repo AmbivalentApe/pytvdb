@@ -46,6 +46,14 @@ def test_get_and_parse():
     assert tv_show.seasons[1].cover_art!=None
     assert tv_show.seasons[1].cover_art.banner_path==u'seasons/78859-2.jpg'
 
+def test_externalids():
+    adapter = HttpTVDBAdapter()
+    with assert_raises(TVDBException) as cm:
+        episode = adapter.get_show_by_imdbid(-1)
+    print cm.exception
+    assert "No series found for \"imdbid=-1\"" == str(cm.exception)
+    show = adapter.get_show_by_imdbid('tt0290978')
+    assert show.id == 78107
 
 def test_episode_by_airdate():
     adapter = HttpTVDBAdapter()
