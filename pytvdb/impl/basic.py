@@ -9,7 +9,7 @@ from . import TVDBShowProvider
 import logging
 import os
 import re
-from datetime import date
+from datetime import date,datetime
 
 class HttpTVDBAdapter(TVDBShowProvider):
     '''
@@ -44,22 +44,19 @@ class HttpTVDBAdapter(TVDBShowProvider):
         2) Pull the XML payloads for the series and unpack into objects (payload is a ZIP file comprising 1* XML for series,episodes and art) 
 
         """
-        
-        GET_SERIES='GetSeries.php?seriesname='
-        series_info = self._get(self.base_url+GET_SERIES+urllib.quote_plus(name)+'&language='+language)
-        self.logger.debug('Fetching series info for \"%s\" language=(%s)' % (name,language))
-        series_xml = etree.fromstring(series_info)
+       
+        results = self.search(name,language,strict=True) 
 
 
         # we get back an xml document that contains no series info if there isn't a match
-        series_id = series_xml.xpath('//seriesid')
-        if len(series_id)==0:
+        if len(results)==0:
             raise TVDBException("No series found for \"%s\"" % (name))
         # equally, error if more than one comes back
 
-        elif len(series_id)>1: 
+        elif len(results)>1: 
             raise TVDBException("Multiple series found for \"%s\"" % (name))
-        series_id = series_id[0].text
+        
+        series_id = results[0][4]
 
         self.logger.debug('Series set to %s' % (series_id))
         base_zip = '%s%s/series/%s/all/%s.zip' % (self.base_url,self.application_id,series_id,language)
@@ -95,7 +92,7 @@ class HttpTVDBAdapter(TVDBShowProvider):
         raise TVDBException(last_exception)
 
 
-    def search(self,name,language='en'):
+    def search(self,name,language='en',strict=False):
         '''
         Search for series matching the name and (optional) language.
 
@@ -110,12 +107,25 @@ class HttpTVDBAdapter(TVDBShowProvider):
         self.logger.debug('Found %s results' % (len(series)))
         results = []
         for s in series:
-            series_name = s.xpath('SeriesName')[0].text 
-            overview = s.xpath('Overview')[0].text 
+            series_name = s.xpath('SeriesName')[0].text
+            if len(s.xpath('Overview'))>0: 
+                overview = s.xpath('Overview')[0].text 
+            else:
+                overview = None
             series_id = int(s.xpath('seriesid')[0].text) 
-            first_aired = s.xpath('FirstAired')[0].text 
+            first_aired = None
+            if len(s.xpath('FirstAired'))>0: 
+                try:
+                    first_aired = datetime.strptime(s.xpath('FirstAired')[0].text,'%Y-%m-%d').date()
+                except:
+                    pass
             language = s.xpath('language')[0].text
-            results.append((series_name,overview,first_aired,language,series_id))
+            item = (series_name,overview,first_aired,language,series_id)
+            if strict and series_name.lower().rstrip() == name.lower().rstrip():
+                return [item]
+            else:
+                results.append(item)
+        self.logger.debug(results)
         return results 
             
 

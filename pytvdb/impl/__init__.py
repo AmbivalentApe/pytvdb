@@ -4,10 +4,10 @@ from abc import ABCMeta
 class TVDBShowProvider:
     __metaclass__ = ABCMeta
 
-    def get_show(name,language='en'):
+    def get_show(name,language='en',strict=False):
         raise NotImplemented
 
-    def search(name,language='en'):
+    def search(name,language='en',strict=False):
         raise NotImplemented
     
     def get_show_by_imdbid(imdbid):

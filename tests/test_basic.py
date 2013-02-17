@@ -22,7 +22,13 @@ def test_search():
     results = adapter.search('90210')
     print results
     assert len(results)==3
+    results = adapter.search('Ashes to Ashes')
+    print results
+    assert len(results)==3
 
+    results = adapter.search('Ashes to Ashes',strict=True)
+    print results
+    assert len(results)==1
 
 def test_get_and_parse():
     adapter = HttpTVDBAdapter()
@@ -31,8 +37,8 @@ def test_get_and_parse():
     assert "No series found for \"I don't exist, honest\"" == str(cm.exception)
     
     with assert_raises(TVDBException) as cm:
-        tv_show = adapter.get_show(r"90210")
-    assert "Multiple series found for \"90210\"" == str(cm.exception)
+        tv_show = adapter.get_show(r"Ashes")
+    assert "Multiple series found for \"Ashes\"" == str(cm.exception)
     
     tv_show = adapter.get_show('Unit One')
     assert isinstance(tv_show.actors,list)
