@@ -44,21 +44,25 @@ class HttpTVDBAdapter(TVDBShowProvider):
         2) Pull the XML payloads for the series and unpack into objects (payload is a ZIP file comprising 1* XML for series,episodes and art) 
 
         """
-       
-        results = self.search(name,language,strict=True) 
+        series_id = -1
+        if isinstance(name,str):       
+            results = self.search(name,language,strict=True) 
 
+            if len(results)==0:
+                raise TVDBException("No series found for \"%s\"" % (name))
+            # equally, error if more than one comes back
 
-        # we get back an xml document that contains no series info if there isn't a match
-        if len(results)==0:
-            raise TVDBException("No series found for \"%s\"" % (name))
-        # equally, error if more than one comes back
-
-        elif len(results)>1: 
-            raise TVDBException("Multiple series found for \"%s\"" % (name))
+            elif len(results)>1: 
+                raise TVDBException("Multiple series found for \"%s\"" % (name))
         
-        series_id = results[0][4]
-
-        self.logger.debug('Series set to %s' % (series_id))
+            series_id = results[0][4]
+            self.logger.debug('Series set to %s' % (series_id))
+        elif isinstance(name,tuple):
+            series_id = name[4]
+        elif isinstance(name,int):
+            series_id = name
+        else:
+            raise TVDBException('Name must be one of str,int,tuple')
         base_zip = '%s%s/series/%s/all/%s.zip' % (self.base_url,self.application_id,series_id,language)
         self.logger.debug('Fetching zip file')
         base_zip = self._get(base_zip)
