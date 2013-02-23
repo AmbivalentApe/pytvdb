@@ -3,6 +3,10 @@ from .model.exceptions import TVDBException
 from .model.tv_show import TVShow
 from .impl import TVDBShowProvider
 
+__author__ = 'Phil Anderson'
+__versioninfo__ = (0, 1, 0)
+__version__ = '.'.join(map(str, __versioninfo__))
+
 # the underlying implementation
 __impl__ = None
 
